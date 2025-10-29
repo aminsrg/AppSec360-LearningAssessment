@@ -1,0 +1,24 @@
+{
+  "serviceName": "AppSec360-LearningAssessment",
+  "databaseType": "MongoDB",
+  "apiPort": 5001,
+  "version": "1.0",
+  "created": "2025-10-29",
+
+  "phase1Completed": {
+    "projectStructure": true,
+    "infrastructureSetup": false,
+    "testInfrastructure": false
+  },
+
+  "entities": [],
+  "enums": [],
+  "repositories": [],
+
+  "namespaces": {
+    "domain": "AppSec360_LearningAssessment.Domain",
+    "application": "AppSec360_LearningAssessment.Application",
+    "infrastructure": "AppSec360_LearningAssessment.Infrastructure",
+    "api": "AppSec360_LearningAssessment.Api"
+  }
+}
