@@ -52,6 +52,7 @@ builder.Services.AddAutoMapper(typeof(AssemblyMarker).Assembly);
 builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<MongoDbContext>();
+builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<MongoDbContext>());
 
 // Add application services
 builder.Services.AddHttpContextAccessor();

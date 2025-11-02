@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "serviceName": "AppSec360-LearningAssessment",
     "createdAt": "2025-11-02T00:00:00Z",
-    "lastModified": "2025-11-02T00:00:00Z",
-    "generatedBy": "Prompt 1.1 v10",
+    "lastModified": "2025-11-02T06:30:00Z",
+    "generatedBy": "Prompt 1.2 v5",
     "description": "Learning and assessment microservice for AppSec360 platform"
   },
   "projectStructure": {
@@ -17,8 +17,195 @@
       "unitTests": "tests/AppSec360-LearningAssessment.UnitTests",
       "integrationTests": "tests/AppSec360-LearningAssessment.IntegrationTests"
     },
-    "entities": [],
-    "features": [],
+    "entities": [
+      {
+        "name": "Quiz",
+        "location": "src/AppSec360-LearningAssessment.Domain/Entities/Quiz.cs",
+        "properties": [
+          { "name": "Title", "type": "string", "constraints": ["required", "max 255"] },
+          { "name": "Description", "type": "string", "constraints": ["optional", "max 500"] },
+          { "name": "RandomizeQuestions", "type": "bool", "constraints": ["required", "default false"] },
+          { "name": "QuestionIds", "type": "List<Guid>", "constraints": ["optional"] }
+        ],
+        "relationships": [
+          { "name": "Questions", "type": "one-to-many", "targetEntity": "Question" }
+        ]
+      },
+      {
+        "name": "Question",
+        "location": "src/AppSec360-LearningAssessment.Domain/Entities/Question.cs",
+        "properties": [
+          { "name": "Text", "type": "string", "constraints": ["required", "max 1000"] },
+          { "name": "Type", "type": "QuestionType", "constraints": ["required", "enum"] },
+          { "name": "Topic", "type": "string", "constraints": ["optional", "max 255"] },
+          { "name": "MaxPoints", "type": "double", "constraints": ["required", "default 1.0"] },
+          { "name": "OrderIndex", "type": "int", "constraints": ["required"] },
+          { "name": "QuizId", "type": "Guid", "constraints": ["required", "foreign-key"] },
+          { "name": "AnswerIds", "type": "List<Guid>", "constraints": ["optional"] }
+        ],
+        "relationships": [
+          { "name": "Quiz", "type": "many-to-one", "targetEntity": "Quiz", "required": true },
+          { "name": "Answers", "type": "one-to-many", "targetEntity": "Answer" }
+        ],
+        "enums": [
+          { "name": "QuestionType", "location": "src/AppSec360-LearningAssessment.Domain/Enums/QuestionType.cs", "values": ["SingleAnswer", "MultipleAnswer"] }
+        ]
+      },
+      {
+        "name": "Answer",
+        "location": "src/AppSec360-LearningAssessment.Domain/Entities/Answer.cs",
+        "properties": [
+          { "name": "Text", "type": "string", "constraints": ["required", "max 500"] },
+          { "name": "IsCorrect", "type": "bool", "constraints": ["required"] },
+          { "name": "Feedback", "type": "string", "constraints": ["optional", "max 500"] },
+          { "name": "OrderIndex", "type": "int", "constraints": ["required"] },
+          { "name": "QuestionId", "type": "Guid", "constraints": ["required", "foreign-key"] }
+        ],
+        "relationships": [
+          { "name": "Question", "type": "many-to-one", "targetEntity": "Question", "required": true }
+        ]
+      },
+      {
+        "name": "Assessment",
+        "location": "src/AppSec360-LearningAssessment.Domain/Entities/Assessment.cs",
+        "properties": [
+          { "name": "Title", "type": "string", "constraints": ["required", "max 255", "inherited from Quiz"] },
+          { "name": "Description", "type": "string", "constraints": ["optional", "max 500", "inherited from Quiz"] },
+          { "name": "RandomizeQuestions", "type": "bool", "constraints": ["required", "default false", "inherited from Quiz"] },
+          { "name": "QuestionIds", "type": "List<Guid>", "constraints": ["optional", "inherited from Quiz"] },
+          { "name": "TimeLimitMinutes", "type": "int", "constraints": ["required", "default 0"] },
+          { "name": "MaxAttemptsPerUser", "type": "int", "constraints": ["required", "default 1"] },
+          { "name": "PassingScorePercent", "type": "double", "constraints": ["required", "default 60"] },
+          { "name": "AttemptIds", "type": "List<Guid>", "constraints": ["optional"] }
+        ],
+        "relationships": [
+          { "name": "Quiz", "type": "inheritance", "targetEntity": "Quiz" },
+          { "name": "Attempts", "type": "one-to-many", "targetEntity": "Attempt" }
+        ]
+      },
+      {
+        "name": "Attempt",
+        "location": "src/AppSec360-LearningAssessment.Domain/Entities/Attempt.cs",
+        "properties": [
+          { "name": "UserId", "type": "string", "constraints": ["required"] },
+          { "name": "AssessmentId", "type": "Guid", "constraints": ["required", "foreign-key"] },
+          { "name": "StartTime", "type": "DateTime", "constraints": ["required"] },
+          { "name": "EndTime", "type": "DateTime", "constraints": ["optional"] },
+          { "name": "Score", "type": "double", "constraints": ["optional"] },
+          { "name": "IsSubmitted", "type": "bool", "constraints": ["required", "default false"] },
+          { "name": "AttemptAnswerIds", "type": "List<Guid>", "constraints": ["optional"] }
+        ],
+        "relationships": [
+          { "name": "Assessment", "type": "many-to-one", "targetEntity": "Assessment", "required": true },
+          { "name": "AttemptAnswers", "type": "one-to-many", "targetEntity": "AttemptAnswer" }
+        ]
+      },
+      {
+        "name": "AttemptAnswer",
+        "location": "src/AppSec360-LearningAssessment.Domain/Entities/AttemptAnswer.cs",
+        "properties": [
+          { "name": "QuestionId", "type": "Guid", "constraints": ["required"] },
+          { "name": "AttemptId", "type": "Guid", "constraints": ["required", "foreign-key"] },
+          { "name": "SelectedAnswerIds", "type": "List<Guid>", "constraints": ["optional"] },
+          { "name": "TextAnswer", "type": "string", "constraints": ["optional", "max 2000"] }
+        ],
+        "relationships": [
+          { "name": "Attempt", "type": "many-to-one", "targetEntity": "Attempt", "required": true }
+        ]
+      }
+    ],
+    "features": [
+      {
+        "entity": "Quiz",
+        "commands": [
+          { "name": "CreateQuizCommand", "returnType": "Result<Guid>", "location": "src/AppSec360-LearningAssessment.Application/Features/Quiz/Commands/CreateQuiz/" },
+          { "name": "UpdateQuizCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Quiz/Commands/UpdateQuiz/" },
+          { "name": "DeleteQuizCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Quiz/Commands/DeleteQuiz/" }
+        ],
+        "queries": [
+          { "name": "GetQuizByIdQuery", "returnType": "Result<QuizDetailDto>", "location": "src/AppSec360-LearningAssessment.Application/Features/Quiz/Queries/GetQuizById/" },
+          { "name": "GetQuizzesListQuery", "returnType": "Result<PaginatedList<QuizListDto>>", "location": "src/AppSec360-LearningAssessment.Application/Features/Quiz/Queries/GetQuizzesList/" }
+        ],
+        "dtos": ["QuizDetailDto", "QuizListDto"],
+        "controller": "src/AppSec360-LearningAssessment.Api/Controllers/v1/QuizController.cs",
+        "createdAt": "2025-11-02T06:16:00Z"
+      },
+      {
+        "entity": "Question",
+        "commands": [
+          { "name": "CreateQuestionCommand", "returnType": "Result<Guid>", "location": "src/AppSec360-LearningAssessment.Application/Features/Question/Commands/CreateQuestion/" },
+          { "name": "UpdateQuestionCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Question/Commands/UpdateQuestion/" },
+          { "name": "DeleteQuestionCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Question/Commands/DeleteQuestion/" }
+        ],
+        "queries": [
+          { "name": "GetQuestionByIdQuery", "returnType": "Result<QuestionDetailDto>", "location": "src/AppSec360-LearningAssessment.Application/Features/Question/Queries/GetQuestionById/" },
+          { "name": "GetQuestionsListQuery", "returnType": "Result<PaginatedList<QuestionListDto>>", "location": "src/AppSec360-LearningAssessment.Application/Features/Question/Queries/GetQuestionsList/" }
+        ],
+        "dtos": ["QuestionDetailDto", "QuestionListDto"],
+        "controller": "src/AppSec360-LearningAssessment.Api/Controllers/v1/QuestionController.cs",
+        "createdAt": "2025-11-02T06:18:00Z"
+      },
+      {
+        "entity": "Answer",
+        "commands": [
+          { "name": "CreateAnswerCommand", "returnType": "Result<Guid>", "location": "src/AppSec360-LearningAssessment.Application/Features/Answer/Commands/CreateAnswer/" },
+          { "name": "UpdateAnswerCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Answer/Commands/UpdateAnswer/" },
+          { "name": "DeleteAnswerCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Answer/Commands/DeleteAnswer/" }
+        ],
+        "queries": [
+          { "name": "GetAnswerByIdQuery", "returnType": "Result<AnswerDetailDto>", "location": "src/AppSec360-LearningAssessment.Application/Features/Answer/Queries/GetAnswerById/" },
+          { "name": "GetAnswersListQuery", "returnType": "Result<PaginatedList<AnswerListDto>>", "location": "src/AppSec360-LearningAssessment.Application/Features/Answer/Queries/GetAnswersList/" }
+        ],
+        "dtos": ["AnswerDetailDto", "AnswerListDto"],
+        "controller": "src/AppSec360-LearningAssessment.Api/Controllers/v1/AnswerController.cs",
+        "createdAt": "2025-11-02T06:22:00Z"
+      },
+      {
+        "entity": "Assessment",
+        "commands": [
+          { "name": "CreateAssessmentCommand", "returnType": "Result<Guid>", "location": "src/AppSec360-LearningAssessment.Application/Features/Assessment/Commands/CreateAssessment/" },
+          { "name": "UpdateAssessmentCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Assessment/Commands/UpdateAssessment/" },
+          { "name": "DeleteAssessmentCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Assessment/Commands/DeleteAssessment/" }
+        ],
+        "queries": [
+          { "name": "GetAssessmentByIdQuery", "returnType": "Result<AssessmentDetailDto>", "location": "src/AppSec360-LearningAssessment.Application/Features/Assessment/Queries/GetAssessmentById/" },
+          { "name": "GetAssessmentsListQuery", "returnType": "Result<PaginatedList<AssessmentListDto>>", "location": "src/AppSec360-LearningAssessment.Application/Features/Assessment/Queries/GetAssessmentsList/" }
+        ],
+        "dtos": ["AssessmentDetailDto", "AssessmentListDto"],
+        "controller": "src/AppSec360-LearningAssessment.Api/Controllers/v1/AssessmentController.cs",
+        "createdAt": "2025-11-02T06:22:00Z"
+      },
+      {
+        "entity": "Attempt",
+        "commands": [
+          { "name": "CreateAttemptCommand", "returnType": "Result<Guid>", "location": "src/AppSec360-LearningAssessment.Application/Features/Attempt/Commands/CreateAttempt/" },
+          { "name": "UpdateAttemptCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Attempt/Commands/UpdateAttempt/" },
+          { "name": "DeleteAttemptCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/Attempt/Commands/DeleteAttempt/" }
+        ],
+        "queries": [
+          { "name": "GetAttemptByIdQuery", "returnType": "Result<AttemptDetailDto>", "location": "src/AppSec360-LearningAssessment.Application/Features/Attempt/Queries/GetAttemptById/" },
+          { "name": "GetAttemptsListQuery", "returnType": "Result<PaginatedList<AttemptListDto>>", "location": "src/AppSec360-LearningAssessment.Application/Features/Attempt/Queries/GetAttemptsList/" }
+        ],
+        "dtos": ["AttemptDetailDto", "AttemptListDto"],
+        "controller": "src/AppSec360-LearningAssessment.Api/Controllers/v1/AttemptController.cs",
+        "createdAt": "2025-11-02T06:23:00Z"
+      },
+      {
+        "entity": "AttemptAnswer",
+        "commands": [
+          { "name": "CreateAttemptAnswerCommand", "returnType": "Result<Guid>", "location": "src/AppSec360-LearningAssessment.Application/Features/AttemptAnswer/Commands/CreateAttemptAnswer/" },
+          { "name": "UpdateAttemptAnswerCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/AttemptAnswer/Commands/UpdateAttemptAnswer/" },
+          { "name": "DeleteAttemptAnswerCommand", "returnType": "Result<Unit>", "location": "src/AppSec360-LearningAssessment.Application/Features/AttemptAnswer/Commands/DeleteAttemptAnswer/" }
+        ],
+        "queries": [
+          { "name": "GetAttemptAnswerByIdQuery", "returnType": "Result<AttemptAnswerDetailDto>", "location": "src/AppSec360-LearningAssessment.Application/Features/AttemptAnswer/Queries/GetAttemptAnswerById/" },
+          { "name": "GetAttemptAnswersListQuery", "returnType": "Result<PaginatedList<AttemptAnswerListDto>>", "location": "src/AppSec360-LearningAssessment.Application/Features/AttemptAnswer/Queries/GetAttemptAnswersList/" }
+        ],
+        "dtos": ["AttemptAnswerDetailDto", "AttemptAnswerListDto"],
+        "controller": "src/AppSec360-LearningAssessment.Api/Controllers/v1/AttemptAnswerController.cs",
+        "createdAt": "2025-11-02T06:24:00Z"
+      }
+    ],
     "repositories": []
   },
   "architecture": {
