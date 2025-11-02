@@ -1,0 +1,14 @@
+using System;
+using MediatR;
+using AppSec360_LearningAssessment.Application.Common.Models;
+
+namespace AppSec360_LearningAssessment.Application.Features.Answer.Commands.UpdateAnswer;
+
+public record UpdateAnswerCommand : IRequest<Result<Unit>>
+{
+    public Guid Id { get; init; }
+    public string Text { get; init; } = string.Empty;
+    public bool IsCorrect { get; init; }
+    public string? Feedback { get; init; }
+    public int OrderIndex { get; init; }
+}

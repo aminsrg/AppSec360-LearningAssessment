@@ -1,4 +1,5 @@
-using Microsoft.EntityFrameworkCore.Storage;
+using MongoDB.Driver;
+using AppSec360_LearningAssessment.Domain.Entities;
 
 namespace AppSec360_LearningAssessment.Application.Common.Interfaces;
 
@@ -7,8 +8,13 @@ namespace AppSec360_LearningAssessment.Application.Common.Interfaces;
 /// </summary>
 public interface IApplicationDbContext
 {
-    // DbSets will be added here as entities are created
-    // Example: DbSet<Product> Products { get; set; }
+    // MongoDB Collections
+    IMongoCollection<Quiz> Quizzes { get; }
+    IMongoCollection<Question> Questions { get; }
+    IMongoCollection<Answer> Answers { get; }
+    IMongoCollection<Assessment> Assessments { get; }
+    IMongoCollection<Attempt> Attempts { get; }
+    IMongoCollection<AttemptAnswer> AttemptAnswers { get; }
 
     /// <summary>
     /// Saves all changes made in this context to the database.
@@ -18,5 +24,5 @@ public interface IApplicationDbContext
     /// <summary>
     /// Begins a new database transaction.
     /// </summary>
-    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task<IClientSessionHandle> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }
