@@ -1,24 +1,84 @@
 {
-  "serviceName": "AppSec360-LearningAssessment",
-  "databaseType": "MongoDB",
-  "apiPort": 5001,
-  "version": "1.0",
-  "created": "2025-10-29",
-
-  "phase1Completed": {
-    "projectStructure": true,
-    "infrastructureSetup": false,
-    "testInfrastructure": false
+  "metadata": {
+    "version": "1.0.0",
+    "serviceName": "AppSec360-LearningAssessment",
+    "createdAt": "2025-11-02T00:00:00Z",
+    "lastModified": "2025-11-02T00:00:00Z",
+    "generatedBy": "Prompt 1.1 v10",
+    "description": "Learning and assessment microservice for AppSec360 platform"
   },
-
-  "entities": [],
-  "enums": [],
-  "repositories": [],
-
-  "namespaces": {
-    "domain": "AppSec360_LearningAssessment.Domain",
-    "application": "AppSec360_LearningAssessment.Application",
-    "infrastructure": "AppSec360_LearningAssessment.Infrastructure",
-    "api": "AppSec360_LearningAssessment.Api"
+  "projectStructure": {
+    "solutionName": "AppSec360-LearningAssessment.sln",
+    "layers": {
+      "domain": "src/AppSec360-LearningAssessment.Domain",
+      "application": "src/AppSec360-LearningAssessment.Application",
+      "infrastructure": "src/AppSec360-LearningAssessment.Infrastructure",
+      "api": "src/AppSec360-LearningAssessment.Api",
+      "unitTests": "tests/AppSec360-LearningAssessment.UnitTests",
+      "integrationTests": "tests/AppSec360-LearningAssessment.IntegrationTests"
+    },
+    "entities": [],
+    "features": [],
+    "repositories": []
+  },
+  "architecture": {
+    "pattern": "Clean Architecture + CQRS",
+    "dataAccess": "Direct DbContext (IApplicationDbContext interface)",
+    "mediator": "MediatR",
+    "validation": "FluentValidation",
+    "mapping": "AutoMapper",
+    "returnType": "Result<T>",
+    "behaviors": [
+      "ValidationBehavior",
+      "LoggingBehavior",
+      "PerformanceBehavior",
+      "TransactionBehavior"
+    ]
+  },
+  "conventions": {
+    "naming": {
+      "entities": "PascalCase singular (e.g., Product)",
+      "commands": "{Entity}{Action}Command (e.g., CreateProductCommand)",
+      "queries": "Get{Entity}{Suffix}Query (e.g., GetProductByIdQuery, GetProductsListQuery)",
+      "handlers": "{CommandOrQuery}Handler (e.g., CreateProductCommandHandler)",
+      "controllers": "{Entity}Controller singular (e.g., ProductController)",
+      "dtos": "{Entity}Dto, {Entity}ListDto, {Entity}DetailDto"
+    },
+    "folderStructure": {
+      "features": "Features/{Entity}/{Commands|Queries}/",
+      "tests": "tests/{ProjectName}/Application/Features/{Entity}/"
+    },
+    "codeStyle": {
+      "namespaces": "File-scoped namespaces",
+      "nullability": "Nullable reference types enabled",
+      "auditFields": "All entities inherit BaseEntity with audit fields",
+      "softDelete": "All entities implement ISoftDeletable"
+    }
+  },
+  "technology": {
+    "framework": ".NET 8",
+    "database": "MongoDB",
+    "orm": "MongoDB.Driver",
+    "port": 5001,
+    "packageManagement": "Central Package Management (Directory.Packages.props)"
+  },
+  "configuration": {
+    "connectionStrings": {
+      "development": "mongodb://localhost:27017",
+      "production": "Set via environment variables"
+    },
+    "databaseSettings": {
+      "databaseName": "AppSec360LearningAssessmentDb"
+    },
+    "authentication": "API Gateway via X-User-Id header",
+    "healthChecks": "/health endpoint"
+  },
+  "constraints": {
+    "noRepositoryPattern": true,
+    "noManualPackageVersions": true,
+    "mandatoryAuditFields": true,
+    "mandatorySoftDelete": true,
+    "allCommandsReturnResult": true,
+    "allQueriesReturnResult": true
   }
 }

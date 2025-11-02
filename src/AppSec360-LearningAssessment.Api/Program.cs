@@ -1,6 +1,7 @@
 using System.Reflection;
 using AppSec360_LearningAssessment.Api.Extensions;
 using AppSec360_LearningAssessment.Api.Filters;
+using AppSec360_LearningAssessment.Application;
 using AppSec360_LearningAssessment.Application.Common.Behaviors;
 using AppSec360_LearningAssessment.Application.Common.Interfaces;
 using AppSec360_LearningAssessment.Infrastructure.Persistence;
@@ -30,11 +31,10 @@ builder.Services.AddApiVersioning(options =>
     options.ApiVersionReader = new UrlSegmentApiVersionReader();
 });
 
-// Add MediatR with application assembly
-var applicationAssembly = Assembly.Load("AppSec360-LearningAssessment.Application");
+// Add MediatR with application assembly using AssemblyMarker
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(applicationAssembly);
+    cfg.RegisterServicesFromAssembly(typeof(AssemblyMarker).Assembly);
 });
 
 // Add MediatR behaviors
@@ -43,10 +43,10 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
 
 // Add FluentValidation
-builder.Services.AddValidatorsFromAssembly(applicationAssembly);
+builder.Services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);
 
 // Add AutoMapper
-builder.Services.AddAutoMapper(applicationAssembly);
+builder.Services.AddAutoMapper(typeof(AssemblyMarker).Assembly);
 
 // Add MongoDB
 builder.Services.AddSingleton<IMongoClient>(sp =>
