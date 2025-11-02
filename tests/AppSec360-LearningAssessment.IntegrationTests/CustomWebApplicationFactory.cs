@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
+using Xunit;
 
 namespace AppSec360_LearningAssessment.IntegrationTests;
 
